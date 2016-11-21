@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import {Link} from 'react-router';
 
 import {createPost} from '../actions/index.js';
 
@@ -16,9 +17,15 @@ class PostsNew extends Component {
 		this.handleChangeContent = this.handleChangeContent.bind(this);
 	}
 
+	static contextTypes = {
+		router: React.PropTypes.object
+	};
+
 	handleSubmit(e) {
 		e.preventDefault();
-		this.props.createPost(this.state);
+		this.props.createPost(this.state).then(() => {
+			this.context.router.push('/');
+		});
 	}
 
 	handleChangeTitle(e) {
@@ -52,25 +59,13 @@ class PostsNew extends Component {
 						<textarea className='form-control' placeholder='Content' onChange={this.handleChangeContent}/>
 					</div>
 					<button type='submit' className='btn btn-primary'>Submit</button>
+					<Link to='/' className='btn btn-danger' style={{marginLeft: '5px'}}>Cancel</Link>
 				</form>
 			</div>
 		)
 	}
 }
 
-function validate(values) {
-	const errors = {};
-
-	if(!values.title){
-		errors.title = 'Enter a valid title';
-	}
-	if(!values.categories){
-		errors.categories = 'Please enter valid categories';
-	}
-	if(!values.content){
-		errors.content = 'Please enter valid content';
-	}
-}
 
 const mapDispatchToProps = (dispatch) => {
 	return bindActionCreators({createPost}, dispatch)
